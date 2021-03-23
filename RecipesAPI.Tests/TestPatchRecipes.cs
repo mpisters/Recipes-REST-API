@@ -59,11 +59,10 @@ namespace RecipesAPI.Tests
       var newRecipe = new RecipeDto("Updated recipe", "Updated description", ingredientList) {Id = 1};
       newRecipe.Id = 1;
       await controller.PatchRecipe(1, newRecipe);
-      var updatedRecipe = recipesContext.Recipes.Last();
-      Assert.Single(recipesContext.Recipes.ToList());
+      var updatedRecipe = await recipesContext.Recipes.FindAsync((long) 1);
       Assert.Equal("Updated recipe", updatedRecipe.Name);
       Assert.Equal("Updated description", updatedRecipe.Description);
-      Assert.Empty(updatedRecipe.Ingredients);
+      Assert.Null(updatedRecipe.Ingredients);
     }
 
     [Fact]
@@ -86,10 +85,9 @@ namespace RecipesAPI.Tests
       await recipesContext.SaveChangesAsync();
       var controller = new RecipesController(recipesContext);
 
-      var newRecipe = new RecipeDto("Updated recipe", "Updated description", ingredientList) {Id = 1};
-      await controller.PatchRecipe(1, newRecipe);
-      var updatedRecipe = recipesContext.Recipes.Last();
-      Assert.Single(recipesContext.Recipes.ToList());
+      var newRecipe = new RecipeDto("Updated recipe", "Updated description", ingredientList) {Id = 2};
+      await controller.PatchRecipe(2, newRecipe);
+      var updatedRecipe = await  recipesContext.Recipes.FindAsync((long) 2);
       Assert.Equal("Updated recipe", updatedRecipe.Name);
       Assert.Equal("Updated description", updatedRecipe.Description);
       Assert.Equal(2, updatedRecipe.Ingredients.Count);
@@ -132,8 +130,7 @@ namespace RecipesAPI.Tests
       updatedIngredientList[1] = ingredient2;
       var newRecipe = new RecipeDto("Updated recipe", "Updated description", updatedIngredientList) {Id = 1};
       await controller.PatchRecipe(1, newRecipe);
-      var updatedRecipe = recipesContext.Recipes.Last();
-      Assert.Single(recipesContext.Recipes.ToList());
+      var updatedRecipe = await recipesContext.Recipes.FindAsync((long) 1);
       Assert.Equal("Updated recipe", updatedRecipe.Name);
       Assert.Equal("Updated description", updatedRecipe.Description);
       Assert.Equal(2, updatedRecipe.Ingredients.Count);
