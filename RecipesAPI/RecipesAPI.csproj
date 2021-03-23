@@ -24,8 +24,4 @@
     <Folder Include="Migrations" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Include=".github\workflows\dotnet.yml" />
-  </ItemGroup>
-
 </Project>
