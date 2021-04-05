@@ -61,13 +61,7 @@ namespace RecipesAPI.Controllers
                 {
                     if (ingredient.Id == null)
                     {
-                        var newIngredient = new Ingredient
-                        {
-                            Name = ingredient.Name,
-                            Amount = ingredient.Amount,
-                            Unit = ingredient.Unit
-                        };
-                        await _context.Ingredients.AddAsync(newIngredient);
+                        var newIngredient = await createNewIngredient(ingredient);
                         newIngredientList.Add(newIngredient);
                     }
                     else
@@ -78,10 +72,7 @@ namespace RecipesAPI.Controllers
                             continue;
                         }
 
-                        existingIngredient.Name = ingredient.Name;
-                        existingIngredient.Amount = ingredient.Amount;
-                        existingIngredient.Unit = ingredient.Unit;
-                        _context.Ingredients.Update(existingIngredient);
+                        existingIngredient = await updateIngredient(existingIngredient, ingredient);
                         newIngredientList.Add(existingIngredient);
                     }
                 }
@@ -101,14 +92,7 @@ namespace RecipesAPI.Controllers
             var newIngredients = new List<Ingredient>();
             foreach (var ingredient in ingredients)
             {
-                var newIngredient = new Ingredient
-                {
-                    Name = ingredient.Name,
-                    Amount = ingredient.Amount,
-                    Unit = ingredient.Unit
-                };
-                await _context.Ingredients.AddAsync(newIngredient);
-                await _context.SaveChangesAsync();
+                var newIngredient = await createNewIngredient(ingredient);
                 newIngredients.Add(newIngredient);
             }
 
@@ -142,5 +126,28 @@ namespace RecipesAPI.Controllers
         {
             return _context.Recipes.Any(item => item.Id == id);
         }
+        
+        private async Task<Ingredient> createNewIngredient(IngredientDto ingredient){
+            var newIngredient = new Ingredient
+            {
+                Name = ingredient.Name,
+                Amount = ingredient.Amount,
+                Unit = ingredient.Unit
+            };
+            await _context.Ingredients.AddAsync(newIngredient);
+            await _context.SaveChangesAsync();
+            return newIngredient;
+        }
+
+        private async Task<Ingredient> updateIngredient(Ingredient ingredient, IngredientDto updatedIngredient)
+        {
+            ingredient.Name = updatedIngredient.Name;
+            ingredient.Amount = updatedIngredient.Amount;
+            ingredient.Unit = updatedIngredient.Unit;
+            _context.Ingredients.Update(ingredient);
+            return ingredient;
+        }
     }
+    
+
 }
