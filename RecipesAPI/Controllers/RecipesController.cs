@@ -117,6 +117,14 @@ namespace RecipesAPI.Controllers
                 return NotFound();
             }
 
+            if (recipe.Ingredients.Count > 0)
+            {
+                foreach (var ingredient in recipe.Ingredients)
+                {
+                    _context.Ingredients.Remove(ingredient);
+                }
+            }
+
             _context.Recipes.Remove(recipe);
             await _context.SaveChangesAsync();
             return NoContent();
