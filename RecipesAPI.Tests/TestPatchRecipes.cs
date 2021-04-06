@@ -49,19 +49,18 @@ namespace RecipesAPI.Tests
       var recipesContext = new RecipesContext(options);
       var emptyIngredientList = new List<Ingredient>();
       var existingIngredient = new Recipe
-          {Description = "existing description", Name = "existing title", Ingredients = emptyIngredientList};
+          {Description = "existing description", Name = "existing title", Ingredients = emptyIngredientList, Id = 9};
       await recipesContext.Recipes.AddAsync(existingIngredient);
       await recipesContext.SaveChangesAsync();
       var controller = new RecipesController(recipesContext);
-      var ingredientList = Array.Empty<IngredientDto>();
-
-      var newRecipe = new RecipeDto("Updated recipe", "Updated description", ingredientList) {Id = 1};
-      newRecipe.Id = 1;
-      await controller.PatchRecipe(1, newRecipe);
-      var updatedRecipe = await recipesContext.Recipes.FindAsync((long) 1);
+      
+      var emptyList = Array.Empty<IngredientDto>();
+      var newRecipe = new RecipeDto("Updated recipe", "Updated description", emptyList) {Id = 9};
+      await controller.PatchRecipe(9, newRecipe);
+      var updatedRecipe = await recipesContext.Recipes.FindAsync((long) 9);
       Assert.Equal("Updated recipe", updatedRecipe.Name);
       Assert.Equal("Updated description", updatedRecipe.Description);
-      Assert.Null(updatedRecipe.Ingredients);
+      Assert.Empty(updatedRecipe.Ingredients);
     }
 
     [Fact]
@@ -72,21 +71,23 @@ namespace RecipesAPI.Tests
       var recipesContext = new RecipesContext(options);
 
       // create existing recipe without ingredients
+  
+      var emptyIngredientList = new List<Ingredient>();
+      var existingRecipe = new Recipe
+          {Description = "existing description", Name = "existing title", Ingredients = emptyIngredientList, Id = 8};
+      await recipesContext.Recipes.AddAsync(existingRecipe);
+      await recipesContext.SaveChangesAsync();
+      var controller = new RecipesController(recipesContext);
+      
       var ingredientList = new IngredientDto[2];
       var ingredient1 = new IngredientDto("Ingredient1", 100, "gr");
       var ingredient2 = new IngredientDto("Ingredient2", 200, "kg");
       ingredientList[0] = ingredient1;
       ingredientList[1] = ingredient2;
-      var emptyIngredientList = new List<Ingredient>();
-      var existingRecipe = new Recipe
-          {Description = "existing description", Name = "existing title", Ingredients = emptyIngredientList};
-      await recipesContext.Recipes.AddAsync(existingRecipe);
-      await recipesContext.SaveChangesAsync();
-      var controller = new RecipesController(recipesContext);
 
-      var newRecipe = new RecipeDto("Updated recipe", "Updated description", ingredientList) {Id = 2};
-      await controller.PatchRecipe(2, newRecipe);
-      var updatedRecipe = await  recipesContext.Recipes.FindAsync((long) 2);
+      var newRecipe = new RecipeDto("Updated recipe", "Updated description", ingredientList) {Id = 8};
+      await controller.PatchRecipe(8, newRecipe);
+      var updatedRecipe = await  recipesContext.Recipes.FindAsync((long) 8);
       Assert.Equal("Updated recipe", updatedRecipe.Name);
       Assert.Equal("Updated description", updatedRecipe.Description);
       Assert.Equal(2, updatedRecipe.Ingredients.Count);
@@ -107,8 +108,8 @@ namespace RecipesAPI.Tests
 
       // add existing ingredients to database
       var ingredientList = new List<Ingredient>();
-      var existingIngredient1 = new Ingredient {Name = "Ingredient1", Amount = 100, Unit = "gr"};
-      var existingIngredient2 = new Ingredient {Name = "Ingredient2", Amount = 200, Unit = "kg"};
+      var existingIngredient1 = new Ingredient {Name = "Ingredient1", Amount = 100, Unit = "gr", Id = 6};
+      var existingIngredient2 = new Ingredient {Name = "Ingredient2", Amount = 200, Unit = "kg", Id = 7};
       ingredientList.Add(existingIngredient1);
       ingredientList.Add(existingIngredient2);
       await recipesContext.Ingredients.AddAsync(existingIngredient1);
@@ -116,20 +117,20 @@ namespace RecipesAPI.Tests
 
       // have existing recipe with ingredients
       var existingRecipe = new Recipe
-          {Description = "existing description", Name = "existing title", Ingredients = ingredientList};
+          {Description = "existing description", Name = "existing title", Ingredients = ingredientList, Id = 4};
       await recipesContext.Recipes.AddAsync(existingRecipe);
       await recipesContext.SaveChangesAsync();
       var controller = new RecipesController(recipesContext);
 
 
       var updatedIngredientList = new IngredientDto[2];
-      var ingredient1 = new IngredientDto("Ingredient1 updated", 333, "gr") {Id = 1};
-      var ingredient2 = new IngredientDto("Ingredient2 updated", 555, "kg") {Id = 2};
+      var ingredient1 = new IngredientDto("Ingredient1 updated", 333, "gr") {Id = 6};
+      var ingredient2 = new IngredientDto("Ingredient2 updated", 555, "kg") {Id = 7};
       updatedIngredientList[0] = ingredient1;
       updatedIngredientList[1] = ingredient2;
-      var newRecipe = new RecipeDto("Updated recipe", "Updated description", updatedIngredientList) {Id = 1};
-      await controller.PatchRecipe(1, newRecipe);
-      var updatedRecipe = await recipesContext.Recipes.FindAsync((long) 1);
+      var newRecipe = new RecipeDto("Updated recipe", "Updated description", updatedIngredientList) {Id = 4};
+      await controller.PatchRecipe(4, newRecipe);
+      var updatedRecipe = await recipesContext.Recipes.FindAsync((long) 4);
       Assert.Equal("Updated recipe", updatedRecipe.Name);
       Assert.Equal("Updated description", updatedRecipe.Description);
       Assert.Equal(2, updatedRecipe.Ingredients.Count);
