@@ -1,4 +1,4 @@
-# RecipesAPI
+``# RecipesAPI
 
 REST API to create/update/delete recipes
 
@@ -8,3 +8,10 @@ Requirements:
 
 ## Migrations
 For database migrations: https://docs.microsoft.com/en-us/ef/core/managing-schemas/migrations/?tabs=dotnet-core-cli
+
+## Docker
+
+build image
+```
+docker build -t test -f Dockerfile .
+```
