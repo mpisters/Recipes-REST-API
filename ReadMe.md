@@ -15,3 +15,8 @@ build image
 ```
 docker build -t test -f Dockerfile .
 ```
+
+run image
+```bash
+
+```
