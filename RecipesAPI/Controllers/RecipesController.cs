@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using RecipesAPI.Domain;
 using RecipesAPI.Models;
 
 namespace RecipesAPI.Controllers
@@ -11,11 +12,10 @@ namespace RecipesAPI.Controllers
     [ApiController]
     public class RecipesController : ControllerBase
     {
-        private readonly RecipesContext _context;
-
-        public RecipesController(RecipesContext context)
+        private RecipeDomain _recipeDomain;
+        public RecipesController(RecipeDomain domain)
         {
-            _context = context;
+            _recipeDomain = domain;
         }
 
         [HttpGet]
@@ -27,85 +27,37 @@ namespace RecipesAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Recipe>> GetRecipeById(long id)
         {
-            var recipe = await _context.Recipes.FindAsync(id);
+            var recipe = await _recipeDomain.GetRecipe(id);
             if (recipe == null)
             {
                 return NotFound();
             }
-
             return recipe;
         }
 
         [HttpPatch("{id}")]
-        public async Task<ActionResult<Recipe>> PatchRecipe(long id, RecipeDto updatedRecipe)
+        public async Task<ActionResult<Recipe>> PatchRecipe(long id, UpdatedIngredientDTO updatedRecipe)
         {
             if (id != updatedRecipe.Id)
             {
                 return BadRequest();
             }
 
-            var currentRecipe = await _context.Recipes.FindAsync(id);
-
+            var currentRecipe = await _recipeDomain.GetRecipe(id);
             if (currentRecipe == null)
             {
                 return NotFound();
             }
 
-            currentRecipe.Name = updatedRecipe.Name;
-            currentRecipe.Description = updatedRecipe.Description;
-
-            if (updatedRecipe.Ingredients != null && updatedRecipe.Ingredients.Length > 0)
-            {
-                var newIngredientList = new List<Ingredient>();
-                foreach (var ingredient in updatedRecipe.Ingredients)
-                {
-                    if (ingredient.Id == null)
-                    {
-                        var newIngredient = await createNewIngredient(ingredient);
-                        newIngredientList.Add(newIngredient);
-                    }
-                    else
-                    {
-                        var existingIngredient = await _context.Ingredients.FindAsync(ingredient.Id);
-                        if (existingIngredient == null)
-                        {
-                            continue;
-                        }
-
-                        existingIngredient = await updateIngredient(existingIngredient, ingredient);
-                        newIngredientList.Add(existingIngredient);
-                    }
-                }
-
-                currentRecipe.Ingredients = newIngredientList;
-            }
-
-            _context.Recipes.Update(currentRecipe);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetRecipeById), new {id = currentRecipe.Id}, currentRecipe);
+            var recipe = await _recipeDomain.updateRecipe(currentRecipe, updatedRecipe);
+            return CreatedAtAction(nameof(GetRecipeById), recipe.Id, recipe);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Recipe>> PostRecipe(RecipeDto newRecipe)
+        public async Task<ActionResult<Recipe>> PostRecipe(CreatedRecipeDTO newCreatedRecipe)
         {
-            var ingredients = newRecipe.Ingredients;
-            var newIngredients = new List<Ingredient>();
-            foreach (var ingredient in ingredients)
-            {
-                var newIngredient = await createNewIngredient(ingredient);
-                newIngredients.Add(newIngredient);
-            }
-
-            var recipe = new Recipe
-            {
-                Name = newRecipe.Name,
-                Description = newRecipe.Description,
-                Ingredients = newIngredients
-            };
-
-            await _context.Recipes.AddAsync(recipe);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetRecipeById), new {id = recipe.Id}, recipe);
+            var recipe = _recipeDomain.createRecipe(newCreatedRecipe);
+            return CreatedAtAction(nameof(GetRecipeById), recipe.Id, recipe);
         }
 
         [HttpDelete]
@@ -135,23 +87,12 @@ namespace RecipesAPI.Controllers
             return _context.Recipes.Any(item => item.Id == id);
         }
         
-        private async Task<Ingredient> createNewIngredient(IngredientDto ingredient){
-            var newIngredient = new Ingredient
-            {
-                Name = ingredient.Name,
-                Amount = ingredient.Amount,
-                Unit = ingredient.Unit
-            };
-            await _context.Ingredients.AddAsync(newIngredient);
-            await _context.SaveChangesAsync();
-            return newIngredient;
-        }
 
-        private async Task<Ingredient> updateIngredient(Ingredient ingredient, IngredientDto updatedIngredient)
+        private async Task<Ingredient> updateIngredient(Ingredient ingredient, CreatedIngredientDTO updatedCreatedIngredient)
         {
-            ingredient.Name = updatedIngredient.Name;
-            ingredient.Amount = updatedIngredient.Amount;
-            ingredient.Unit = updatedIngredient.Unit;
+            ingredient.Name = updatedCreatedIngredient.Name;
+            ingredient.Amount = updatedCreatedIngredient.Amount;
+            ingredient.Unit = updatedCreatedIngredient.Unit;
             _context.Ingredients.Update(ingredient);
             return ingredient;
         }
