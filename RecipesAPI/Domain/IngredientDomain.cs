@@ -1,5 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using RecipesAPI.Models;
 
 namespace RecipesAPI.Domain
@@ -13,12 +15,12 @@ namespace RecipesAPI.Domain
             _databaseActions = databaseActions;
         }
 
-        public Ingredient mapIngredientToDomain(CreatedIngredientDTO newIngredient)
+        public Ingredient mapIngredientToDomain(CreatedIngredientDto newIngredient)
         {
             return new Ingredient(newIngredient.Name, newIngredient.Amount, newIngredient.Unit);
         }
 
-        public ICollection<Ingredient> createIngredientList(ICollection<CreatedIngredientDTO> newIngredients)
+        public ICollection<Ingredient> createIngredientList(ICollection<CreatedIngredientDto> newIngredients)
         {
             ICollection<Ingredient> ingredients = new List<Ingredient>();
             foreach (var ingredient in newIngredients)
@@ -28,6 +30,53 @@ namespace RecipesAPI.Domain
             }
             _databaseActions.SaveIngredients(ingredients);
             return ingredients;
+        }
+        
+        public async Task<ActionResult<Ingredient>> updateIngredient(UpdatedIngredientDto updatedIngredient, Ingredient currentIngredient)
+        {
+            if (updatedIngredient.Amount != null)
+            {
+                currentIngredient.Amount = (int) updatedIngredient.Amount;
+            }
+
+            if (updatedIngredient.Name != null)
+            {
+                currentIngredient.Name = updatedIngredient.Name;
+            }
+
+            if (updatedIngredient.Unit != null)
+            {
+                currentIngredient.Unit = updatedIngredient.Unit;
+            }
+
+            await _databaseActions.updateIngredient(currentIngredient);
+            return currentIngredient;
+        }
+
+        public async Task<ICollection<Ingredient>> updateOrCreateIngredientList(
+                ICollection<UpdatedIngredientDto> updatedIngredients)
+        {
+            ICollection<Ingredient> ingredients = new List<Ingredient>();
+            ICollection<CreatedIngredientDto> newIngredientDtos = new List<CreatedIngredientDto>();
+            foreach (var ingredient in updatedIngredients)
+            {
+                if (ingredient.Id == null && ingredient.Amount != null && ingredient.Unit != null && ingredient.Name != null)
+                {
+                    newIngredientDtos.Add(new CreatedIngredientDto(ingredient.Name,  (int) ingredient.Amount, ingredient.Unit));
+                } else if (ingredient.Id != null)
+                {
+                    var foundIngredient = await _databaseActions.GetIngredient((long) ingredient.Id);
+                    if (foundIngredient != null)
+                    {
+                        var updatedIngredient =  await updateIngredient(ingredient, foundIngredient.Value);
+                        ingredients.Add(updatedIngredient.Value);
+                    }
+                }
+            }
+
+            var newIngredients = createIngredientList(newIngredientDtos);
+            var allIngredients = newIngredients.Concat(ingredients) as ICollection<Ingredient>;
+            return allIngredients;
         }
         
     }

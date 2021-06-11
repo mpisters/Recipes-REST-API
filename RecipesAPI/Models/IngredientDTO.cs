@@ -1,9 +1,9 @@
 #nullable enable
 namespace RecipesAPI.Models
 {
-  public class CreatedIngredientDTO
+  public class CreatedIngredientDto
   {
-    public CreatedIngredientDTO(string name, int amount, string unit)
+    public CreatedIngredientDto(string name, int amount, string unit)
     {
       Name = name;
       Amount = amount;
@@ -15,9 +15,9 @@ namespace RecipesAPI.Models
     public string Unit { get; set; }
   }
   
-   public class UpdatedIngredientDTO
+   public class UpdatedIngredientDto
     {
-      public long Id { get; set; }
+      public long? Id { get; set; }
       
       public string? Name { get; set; }
       public int? Amount { get; set; }

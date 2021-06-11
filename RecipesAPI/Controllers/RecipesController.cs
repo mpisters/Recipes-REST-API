@@ -36,7 +36,7 @@ namespace RecipesAPI.Controllers
         }
 
         [HttpPatch("{id}")]
-        public async Task<ActionResult<Recipe>> PatchRecipe(long id, UpdatedIngredientDTO updatedRecipe)
+        public async Task<ActionResult<Recipe>> PatchRecipe(long id, UpdatedIngredientDto updatedRecipe)
         {
             if (id != updatedRecipe.Id)
             {
@@ -49,14 +49,14 @@ namespace RecipesAPI.Controllers
                 return NotFound();
             }
 
-            var recipe = await _recipeDomain.updateRecipe(currentRecipe, updatedRecipe);
+            var recipe = await _recipeDomain.UpdateRecipe(currentRecipe, updatedRecipe);
             return CreatedAtAction(nameof(GetRecipeById), recipe.Id, recipe);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Recipe>> PostRecipe(CreatedRecipeDTO newCreatedRecipe)
+        public async Task<ActionResult<Recipe>> PostRecipe(CreatedRecipeDto newCreatedRecipe)
         {
-            var recipe = _recipeDomain.createRecipe(newCreatedRecipe);
+            var recipe = _recipeDomain.CreateRecipe(newCreatedRecipe);
             return CreatedAtAction(nameof(GetRecipeById), recipe.Id, recipe);
         }
 
@@ -88,7 +88,7 @@ namespace RecipesAPI.Controllers
         }
         
 
-        private async Task<Ingredient> updateIngredient(Ingredient ingredient, CreatedIngredientDTO updatedCreatedIngredient)
+        private async Task<Ingredient> updateIngredient(Ingredient ingredient, CreatedIngredientDto updatedCreatedIngredient)
         {
             ingredient.Name = updatedCreatedIngredient.Name;
             ingredient.Amount = updatedCreatedIngredient.Amount;

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RecipesAPI.Models;
@@ -8,7 +7,7 @@ namespace RecipesAPI.Domain
     public class RecipeDomain
     {
         private readonly DatabaseActions _databaseActions;
-        private  readonly IngredientDomain _ingredientDomain;
+        private readonly IngredientDomain _ingredientDomain;
 
         public RecipeDomain(DatabaseActions databaseActions, IngredientDomain ingredientDomain)
         {
@@ -16,7 +15,7 @@ namespace RecipesAPI.Domain
             _ingredientDomain = ingredientDomain;
         }
 
-        public async Task<ActionResult<Recipe>> updateRecipe(Recipe currentRecipe, UpdateRecipeDTO updatedRecipe)
+        public async Task<ActionResult<Recipe>> UpdateRecipe(Recipe currentRecipe, UpdateRecipeDTO updatedRecipe)
         {
             if (updatedRecipe.Name != null)
             {
@@ -27,19 +26,18 @@ namespace RecipesAPI.Domain
             {
                 currentRecipe.Description = updatedRecipe.Description;
             }
-            
-            // ToDo update Ingredients
-             if (updatedRecipe.Ingredients != null)
+
+            if (updatedRecipe.Ingredients != null)
             {
-               
+                currentRecipe.Ingredients =
+                        await _ingredientDomain.updateOrCreateIngredientList(updatedRecipe.Ingredients);
             }
 
             await _databaseActions.UpdateRecipe(currentRecipe);
             return currentRecipe;
-
         }
+
         {
-            
         }
 
         public async Task<ActionResult<Recipe>> GetRecipe(long id)
@@ -47,7 +45,7 @@ namespace RecipesAPI.Domain
             return await _databaseActions.GetRecipe(id);
         }
 
-        public async Task<ActionResult<Recipe>> createRecipe(CreatedRecipeDTO newCreatedRecipe)
+        public async Task<ActionResult<Recipe>> CreateRecipe(CreatedRecipeDto newCreatedRecipe)
         {
             var ingredients = _ingredientDomain.createIngredientList(newCreatedRecipe.Ingredients);
             var recipe = new Recipe(newCreatedRecipe.Name, newCreatedRecipe.Description, ingredients);

@@ -3,28 +3,25 @@ using System.Collections.Generic;
 #nullable enable
 namespace RecipesAPI.Models
 {
-  public class CreatedRecipeDTO
-  {
-    public CreatedRecipeDTO(string name, string description, CreatedIngredientDTO[] ingredients)
+    public class CreatedRecipeDto
     {
-      Name = name;
-      Description = description;
-      Ingredients = ingredients;
+        public CreatedRecipeDto(string name, string description, CreatedIngredientDto[] ingredients)
+        {
+            Name = name;
+            Description = description;
+            Ingredients = ingredients;
+        }
+
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public ICollection<CreatedIngredientDto> Ingredients { get; set; }
     }
 
-    public string Name { get; set; }
-    public string Description { get; set; }
-    public ICollection<CreatedIngredientDTO> Ingredients { get; set; }
-  }
-
-  public class UpdateRecipeDTO
-  {
-    public UpdatedRecipeDTO()
+    public class UpdateRecipeDTO
     {
-    public long Id { get; set; }
-    public string? Name{ get; set; }
-    public string? Description { get; set; }
-    public ICollection<UpdatedIngredientDTO>? Ingredients { get; set; }
+        public long Id { get; set; }
+        public string? Name { get; set; }
+        public string? Description { get; set; }
+        public ICollection<UpdatedIngredientDto>? Ingredients { get; set; }
     }
-  }
 }
