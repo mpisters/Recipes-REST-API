@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -58,7 +57,10 @@ namespace RecipesAPI.Domain
         public async Task<ActionResult<Recipe>> CreateRecipe(CreatedRecipeDto newCreatedRecipe)
         {
             var ingredients = _ingredientDomain.CreateIngredientList(newCreatedRecipe.Ingredients);
-            var recipe = new Recipe(newCreatedRecipe.Name, newCreatedRecipe.Description, ingredients);
+            var recipe = new Recipe();
+            recipe.Name = newCreatedRecipe.Name;
+            recipe.Description = newCreatedRecipe.Description;
+            recipe.Ingredients = ingredients;
             await _databaseActions.CreateRecipe(recipe);
             return recipe;
         }

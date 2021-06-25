@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using RecipesAPI.Controllers;
@@ -21,7 +21,9 @@ namespace RecipesAPI.Tests
         [Fact]
         public async Task PostRecipeWithoutIngredients()
         {
-            var ingredientList = Array.Empty<CreatedIngredientDto>();
+            // ToDo fix   System.NullReferenceException : Object reference not set to an instance of an object.
+            // ToDo fix running tests in rider
+            var ingredientList = new List<CreatedIngredientDto>();
             var controller = CreateRecipesController();
             var newRecipe = new CreatedRecipeDto("Test recipe", "Test description", ingredientList);
             
@@ -56,7 +58,7 @@ namespace RecipesAPI.Tests
             var newIngredient = new CreatedIngredientDto("ui", 2, "unit");
             var newIngredient2 = new CreatedIngredientDto("knoflook", 3, "unit");
             var ingredientList = new[] {newIngredient, newIngredient2};
-
+        
             var newRecipe = new CreatedRecipeDto("Test recipe", "Test description", ingredientList);
             var createdRecipe = await controller.PostRecipe(newRecipe);
             Assert.Equal("Test recipe", createdRecipe.Value.Name);
