@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,15 +17,15 @@ namespace RecipesAPI.Domain
             _context = context;
         }
 
-        public async Task<int> CreateRecipe(Recipe recipe)
+        public async Task CreateRecipe(Recipe recipe)
         {
             await _context.Recipes.AddAsync(recipe);
-            return await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
 
-        public async Task<ActionResult<ICollection<Ingredient>>> getIngredients()
+        public async Task<ActionResult<ICollection<Recipe>>> getRecipes()
         {
-            return await _context.Recipes.ToListAsync();
+            return  await _context.Recipes.ToListAsync();
         }
 
         public async Task<int> UpdateRecipe(Recipe recipe)
@@ -42,18 +43,24 @@ namespace RecipesAPI.Domain
         {
             await _context.Ingredients.AddRangeAsync(ingredients);
             await _context.SaveChangesAsync();
-            return;
         }
         
-        public async Task<int> updateIngredient(Ingredient ingredient)
+        public async Task UpdateIngredient(Ingredient ingredient)
         {
             _context.Ingredients.Update(ingredient);
-            return await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
 
         public async  Task<ActionResult<Ingredient>> GetIngredient(long id)
         {
             return await _context.Ingredients.FindAsync(id);
+        }
+
+        public async Task RemoveRecipe(Recipe recipe)
+        {
+             _context.Recipes.Remove(recipe);
+            await _context.SaveChangesAsync();
+            await Task.CompletedTask;
         }
     }
 }

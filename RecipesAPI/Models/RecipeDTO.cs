@@ -5,7 +5,7 @@ namespace RecipesAPI.Models
 {
     public class CreatedRecipeDto
     {
-        public CreatedRecipeDto(string name, string description, CreatedIngredientDto[] ingredients)
+        public CreatedRecipeDto(string name, string description, ICollection<CreatedIngredientDto> ingredients)
         {
             Name = name;
             Description = description;
@@ -17,8 +17,15 @@ namespace RecipesAPI.Models
         public ICollection<CreatedIngredientDto> Ingredients { get; set; }
     }
 
-    public class UpdateRecipeDTO
+    public class UpdatedRecipeDTO
     {
+        public UpdatedRecipeDTO(string? name, string? description, ICollection<UpdatedIngredientDto>? ingredients)
+        {
+            Name = name;
+            Description = description;
+            Ingredients = ingredients;
+        }
+
         public long Id { get; set; }
         public string? Name { get; set; }
         public string? Description { get; set; }

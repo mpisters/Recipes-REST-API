@@ -1,21 +1,23 @@
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RecipesAPI.Models;
 
 namespace RecipesAPI.Domain
 {
-    public class RecipeDomain
+    public class RecipesDomain
     {
         private readonly DatabaseActions _databaseActions;
         private readonly IngredientDomain _ingredientDomain;
 
-        public RecipeDomain(DatabaseActions databaseActions, IngredientDomain ingredientDomain)
+        public RecipesDomain(DatabaseActions databaseActions, IngredientDomain ingredientDomain)
         {
             _databaseActions = databaseActions;
             _ingredientDomain = ingredientDomain;
         }
 
-        public async Task<ActionResult<Recipe>> UpdateRecipe(Recipe currentRecipe, UpdateRecipeDTO updatedRecipe)
+        public async Task<ActionResult<Recipe>> UpdateRecipe(Recipe currentRecipe, UpdatedRecipeDTO updatedRecipe)
         {
             if (updatedRecipe.Name != null)
             {
@@ -30,24 +32,32 @@ namespace RecipesAPI.Domain
             if (updatedRecipe.Ingredients != null)
             {
                 currentRecipe.Ingredients =
-                        await _ingredientDomain.updateOrCreateIngredientList(updatedRecipe.Ingredients);
+                        await _ingredientDomain.UpdateOrCreateIngredientList(updatedRecipe.Ingredients);
             }
 
             await _databaseActions.UpdateRecipe(currentRecipe);
             return currentRecipe;
         }
-
-        {
-        }
-
+        
         public async Task<ActionResult<Recipe>> GetRecipe(long id)
         {
             return await _databaseActions.GetRecipe(id);
         }
 
+        public async Task<ActionResult<ICollection<Recipe>>> getRecipes()
+        {
+            return await _databaseActions.getRecipes();
+        }
+
+        public async Task RemoveRecipe(Recipe recipe)
+        {
+            await _databaseActions.RemoveRecipe(recipe);
+            await Task.CompletedTask;
+        }
+
         public async Task<ActionResult<Recipe>> CreateRecipe(CreatedRecipeDto newCreatedRecipe)
         {
-            var ingredients = _ingredientDomain.createIngredientList(newCreatedRecipe.Ingredients);
+            var ingredients = _ingredientDomain.CreateIngredientList(newCreatedRecipe.Ingredients);
             var recipe = new Recipe(newCreatedRecipe.Name, newCreatedRecipe.Description, ingredients);
             await _databaseActions.CreateRecipe(recipe);
             return recipe;

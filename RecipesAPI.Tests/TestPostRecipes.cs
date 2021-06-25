@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using RecipesAPI.Controllers;
+using RecipesAPI.Domain;
 using RecipesAPI.Models;
 using Xunit;
 
@@ -20,36 +21,30 @@ namespace RecipesAPI.Tests
         [Fact]
         public async Task PostRecipeWithoutIngredients()
         {
-            var options = _fixture.options;
-            var recipesContext = new RecipesContext(options);
-
-            var controller = new RecipesController(recipesContext);
-            var ingredientList = Array.Empty<IngredientDto>();
-
-            var newRecipe = new RecipeDto("Test recipe", "Test description", ingredientList);
-            await controller.PostRecipe(newRecipe);
-            var addedRecipe = recipesContext.Recipes.Last();
-            Assert.Equal("Test recipe", addedRecipe.Name);
-            Assert.Equal("Test description", addedRecipe.Description);
-            Assert.Empty(addedRecipe.Ingredients);
+            var ingredientList = Array.Empty<CreatedIngredientDto>();
+            var controller = CreateRecipesController();
+            var newRecipe = new CreatedRecipeDto("Test recipe", "Test description", ingredientList);
+            
+            var createdRecipe = await controller.PostRecipe(newRecipe);
+            
+            Assert.Equal("Test recipe", createdRecipe.Value.Name);
+            Assert.Equal("Test description", createdRecipe.Value.Description);
+            Assert.Empty(createdRecipe.Value.Ingredients);
         }
 
         [Fact]
         public async Task PostRecipeWithIngredient()
         {
-            var options = _fixture.options;
-            var recipesContext = new RecipesContext(options);
-
-            var controller = new RecipesController(recipesContext);
-            var newIngredient = new IngredientDto("ui", 2, "unit");
+            var controller = CreateRecipesController();
+            var newIngredient = new CreatedIngredientDto("ui", 2, "unit");
             var ingredientList = new[] {newIngredient};
-
-            var newRecipe = new RecipeDto("Test recipe", "Test description", ingredientList);
-            await controller.PostRecipe(newRecipe);
-            var addedRecipe = recipesContext.Recipes.LastOrDefault();
-            Assert.Equal("Test recipe", addedRecipe.Name);
-            Assert.Equal("Test description", addedRecipe.Description);
-            var firstIngredient = addedRecipe.Ingredients[0];
+            var newRecipe = new CreatedRecipeDto("Test recipe", "Test description", ingredientList);
+            
+            var createdRecipe = await controller.PostRecipe(newRecipe);
+            
+            Assert.Equal("Test recipe", createdRecipe.Value.Name);
+            Assert.Equal("Test description", createdRecipe.Value.Description);
+            var firstIngredient = createdRecipe.Value.Ingredients.ToList()[0];
             Assert.Equal("ui", firstIngredient.Name);
             Assert.Equal(2, firstIngredient.Amount);
             Assert.Equal("unit", firstIngredient.Unit);
@@ -57,20 +52,27 @@ namespace RecipesAPI.Tests
         [Fact]
         public async Task PostRecipeWithIngredients()
         {
-            var options = _fixture.options;
-            var recipesContext = new RecipesContext(options);
-
-            var controller = new RecipesController(recipesContext);
-            var newIngredient = new IngredientDto("ui", 2, "unit");
-            var newIngredient2 = new IngredientDto("knoflook", 3, "unit");
+            var controller = CreateRecipesController();
+            var newIngredient = new CreatedIngredientDto("ui", 2, "unit");
+            var newIngredient2 = new CreatedIngredientDto("knoflook", 3, "unit");
             var ingredientList = new[] {newIngredient, newIngredient2};
 
-            var newRecipe = new RecipeDto("Test recipe", "Test description", ingredientList);
-            await controller.PostRecipe(newRecipe);
-            var addedRecipe = recipesContext.Recipes.Last();
-            Assert.Equal("Test recipe", addedRecipe.Name);
-            Assert.Equal("Test description", addedRecipe.Description);
-            Assert.Equal(2, addedRecipe.Ingredients.Count);
+            var newRecipe = new CreatedRecipeDto("Test recipe", "Test description", ingredientList);
+            var createdRecipe = await controller.PostRecipe(newRecipe);
+            Assert.Equal("Test recipe", createdRecipe.Value.Name);
+            Assert.Equal("Test description", createdRecipe.Value.Description);
+            Assert.Equal(2, createdRecipe.Value.Ingredients.Count);
+        }
+
+        private RecipesController CreateRecipesController()
+        {
+            var options = _fixture.options;
+            var recipesContext = new RecipesContext(options);
+            var databaseActions = new DatabaseActions(recipesContext);
+            var ingredientDomain = new IngredientDomain(databaseActions);
+            var recipesDomain = new RecipesDomain(databaseActions, ingredientDomain);
+            return new RecipesController(recipesDomain);
         }
     }
+    
 }

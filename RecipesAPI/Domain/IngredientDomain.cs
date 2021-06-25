@@ -20,7 +20,7 @@ namespace RecipesAPI.Domain
             return new Ingredient(newIngredient.Name, newIngredient.Amount, newIngredient.Unit);
         }
 
-        public ICollection<Ingredient> createIngredientList(ICollection<CreatedIngredientDto> newIngredients)
+        public ICollection<Ingredient> CreateIngredientList(ICollection<CreatedIngredientDto> newIngredients)
         {
             ICollection<Ingredient> ingredients = new List<Ingredient>();
             foreach (var ingredient in newIngredients)
@@ -32,7 +32,7 @@ namespace RecipesAPI.Domain
             return ingredients;
         }
         
-        public async Task<ActionResult<Ingredient>> updateIngredient(UpdatedIngredientDto updatedIngredient, Ingredient currentIngredient)
+        public async Task<ActionResult<Ingredient>> UpdateIngredient(UpdatedIngredientDto updatedIngredient, Ingredient currentIngredient)
         {
             if (updatedIngredient.Amount != null)
             {
@@ -49,11 +49,11 @@ namespace RecipesAPI.Domain
                 currentIngredient.Unit = updatedIngredient.Unit;
             }
 
-            await _databaseActions.updateIngredient(currentIngredient);
+            await _databaseActions.UpdateIngredient(currentIngredient);
             return currentIngredient;
         }
 
-        public async Task<ICollection<Ingredient>> updateOrCreateIngredientList(
+        public async Task<ICollection<Ingredient>> UpdateOrCreateIngredientList(
                 ICollection<UpdatedIngredientDto> updatedIngredients)
         {
             ICollection<Ingredient> ingredients = new List<Ingredient>();
@@ -68,13 +68,13 @@ namespace RecipesAPI.Domain
                     var foundIngredient = await _databaseActions.GetIngredient((long) ingredient.Id);
                     if (foundIngredient != null)
                     {
-                        var updatedIngredient =  await updateIngredient(ingredient, foundIngredient.Value);
+                        var updatedIngredient =  await UpdateIngredient(ingredient, foundIngredient.Value);
                         ingredients.Add(updatedIngredient.Value);
                     }
                 }
             }
 
-            var newIngredients = createIngredientList(newIngredientDtos);
+            var newIngredients = CreateIngredientList(newIngredientDtos);
             var allIngredients = newIngredients.Concat(ingredients) as ICollection<Ingredient>;
             return allIngredients;
         }
