@@ -68,7 +68,7 @@ namespace RecipesAPI.Tests
 
         private RecipesController CreateRecipesController()
         {
-            var options = _fixture.options;
+            var options = _fixture.Options;
             var recipesContext = new RecipesContext(options);
             var databaseActions = new DatabaseActions(recipesContext);
             var ingredientDomain = new IngredientDomain(databaseActions);

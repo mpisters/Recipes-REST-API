@@ -19,7 +19,7 @@ namespace RecipesAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<ICollection<Recipe>>> GetRecipes()
         {
-            return await _recipesDomain.getRecipes();
+            return await _recipesDomain.GetRecipes();
         }
 
         [HttpGet("{id}")]
@@ -34,7 +34,7 @@ namespace RecipesAPI.Controllers
         }
 
         [HttpPatch("{id}")]
-        public async Task<ActionResult<Recipe>> PatchRecipe(long id, UpdatedRecipeDTO updatedRecipe)
+        public async Task<ActionResult<Recipe>> PatchRecipe(long id, UpdatedRecipeDto updatedRecipe)
         {
             if (id != updatedRecipe.Id)
             {

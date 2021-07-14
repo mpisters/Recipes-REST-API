@@ -16,7 +16,7 @@ namespace RecipesAPI.Domain
             _ingredientDomain = ingredientDomain;
         }
 
-        public async Task<ActionResult<Recipe>> UpdateRecipe(Recipe currentRecipe, UpdatedRecipeDTO updatedRecipe)
+        public async Task<ActionResult<Recipe>> UpdateRecipe(Recipe currentRecipe, UpdatedRecipeDto updatedRecipe)
         {
             if (updatedRecipe.Name != null)
             {
@@ -43,9 +43,9 @@ namespace RecipesAPI.Domain
             return await _databaseActions.GetRecipe(id);
         }
 
-        public async Task<ActionResult<ICollection<Recipe>>> getRecipes()
+        public async Task<ActionResult<ICollection<Recipe>>> GetRecipes()
         {
-            return await _databaseActions.getRecipes();
+            return await _databaseActions.GetRecipes();
         }
 
         public async Task RemoveRecipe(Recipe recipe)
@@ -57,10 +57,12 @@ namespace RecipesAPI.Domain
         public async Task<ActionResult<Recipe>> CreateRecipe(CreatedRecipeDto newCreatedRecipe)
         {
             var ingredients = _ingredientDomain.CreateIngredientList(newCreatedRecipe.Ingredients);
-            var recipe = new Recipe();
-            recipe.Name = newCreatedRecipe.Name;
-            recipe.Description = newCreatedRecipe.Description;
-            recipe.Ingredients = ingredients;
+            var recipe = new Recipe
+            {
+                    Name = newCreatedRecipe.Name,
+                    Description = newCreatedRecipe.Description,
+                    Ingredients = ingredients
+            };
             await _databaseActions.CreateRecipe(recipe);
             return recipe;
         }

@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +8,7 @@ namespace RecipesAPI.Domain
 {
     public class DatabaseActions
     {
-        private RecipesContext _context;
+        private readonly RecipesContext _context;
 
         public DatabaseActions(RecipesContext context)
         {
@@ -23,15 +21,15 @@ namespace RecipesAPI.Domain
             await _context.SaveChangesAsync();
         }
 
-        public async Task<ActionResult<ICollection<Recipe>>> getRecipes()
+        public async Task<ActionResult<ICollection<Recipe>>> GetRecipes()
         {
             return  await _context.Recipes.ToListAsync();
         }
 
-        public async Task<int> UpdateRecipe(Recipe recipe)
+        public async Task UpdateRecipe(Recipe recipe)
         {
             _context.Recipes.Update(recipe);
-            return await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
 
         public async Task<ActionResult<Recipe>> GetRecipe(long id)

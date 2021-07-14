@@ -17,13 +17,14 @@ namespace RecipesAPI.Models
         public ICollection<CreatedIngredientDto> Ingredients { get; set; }
     }
 
-    public class UpdatedRecipeDTO
+    public class UpdatedRecipeDto
     {
-        public UpdatedRecipeDTO(string? name, string? description, ICollection<UpdatedIngredientDto>? ingredients)
+        public UpdatedRecipeDto(string? name, string? description, ICollection<UpdatedIngredientDto>? ingredients, long id)
         {
             Name = name;
             Description = description;
             Ingredients = ingredients;
+            Id = id;
         }
 
         public long Id { get; set; }
