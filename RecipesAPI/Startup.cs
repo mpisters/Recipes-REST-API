@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using RecipesAPI.Domain;
 using RecipesAPI.Models;
 
 namespace RecipesAPI
@@ -22,6 +23,9 @@ namespace RecipesAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddScoped<RecipesDomain>();
+            services.AddScoped<DatabaseActions>();
+            services.AddScoped<IngredientDomain>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Recipes", Version = "v1" });
