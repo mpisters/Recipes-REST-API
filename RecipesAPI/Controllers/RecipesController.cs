@@ -61,7 +61,7 @@ namespace RecipesAPI.Controllers
                 {
                     if (ingredient.Id == null)
                     {
-                        var newIngredient = await createNewIngredient(ingredient);
+                        var newIngredient = await CreateNewIngredient(ingredient);
                         newIngredientList.Add(newIngredient);
                     }
                     else
@@ -72,7 +72,7 @@ namespace RecipesAPI.Controllers
                             continue;
                         }
 
-                        existingIngredient = await updateIngredient(existingIngredient, ingredient);
+                        existingIngredient = UpdateIngredient(existingIngredient, ingredient);
                         newIngredientList.Add(existingIngredient);
                     }
                 }
@@ -90,11 +90,12 @@ namespace RecipesAPI.Controllers
         {
             var ingredients = newRecipe.Ingredients;
             var newIngredients = new List<Ingredient>();
-            foreach (var ingredient in ingredients)
-            {
-                var newIngredient = await createNewIngredient(ingredient);
-                newIngredients.Add(newIngredient);
-            }
+            if (ingredients != null)
+                foreach (var ingredient in ingredients)
+                {
+                    var newIngredient = await CreateNewIngredient(ingredient);
+                    newIngredients.Add(newIngredient);
+                }
 
             var recipe = new Recipe
             {
@@ -135,7 +136,7 @@ namespace RecipesAPI.Controllers
             return _context.Recipes.Any(item => item.Id == id);
         }
         
-        private async Task<Ingredient> createNewIngredient(IngredientDto ingredient){
+        private async Task<Ingredient> CreateNewIngredient(IngredientDto ingredient){
             var newIngredient = new Ingredient
             {
                 Name = ingredient.Name,
@@ -147,7 +148,7 @@ namespace RecipesAPI.Controllers
             return newIngredient;
         }
 
-        private async Task<Ingredient> updateIngredient(Ingredient ingredient, IngredientDto updatedIngredient)
+        private  Ingredient UpdateIngredient(Ingredient ingredient, IngredientDto updatedIngredient)
         {
             ingredient.Name = updatedIngredient.Name;
             ingredient.Amount = updatedIngredient.Amount;
