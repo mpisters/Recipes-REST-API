@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -48,14 +49,14 @@ namespace RecipesAPI.Controllers
             }
 
             var recipe = await _recipesDomain.UpdateRecipe(currentRecipe.Value, updatedRecipe);
-            return CreatedAtAction(nameof(GetRecipeById), recipe.Value.Id, recipe);
+            return recipe;
         }
 
         [HttpPost]
         public async Task<ActionResult<Recipe>> PostRecipe(CreatedRecipeDto newCreatedRecipe)
         {
             var recipe = await _recipesDomain.CreateRecipe(newCreatedRecipe);
-            return CreatedAtAction(nameof(GetRecipeById), recipe.Value.Id, recipe);
+            return recipe;
         }
 
         [HttpDelete]
