@@ -76,7 +76,7 @@ namespace RecipesAPI.Domain
             }
 
             var newIngredients = CreateIngredientList(newIngredientDtos);
-            var allIngredients = newIngredients.Concat(ingredients) as ICollection<Ingredient>;
+            var allIngredients = newIngredients.Concat(ingredients).ToList();
             return allIngredients;
         }
         

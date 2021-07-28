@@ -43,7 +43,7 @@ namespace RecipesAPI.Controllers
             }
 
             var currentRecipe = await _recipesDomain.GetRecipe(id);
-            if (currentRecipe == null)
+            if (currentRecipe.Result == null && currentRecipe.Value == null)
             {
                 return NotFound();
             }
