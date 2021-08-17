@@ -1,18 +1,35 @@
+using System.Collections.Generic;
+
 #nullable enable
 namespace RecipesAPI.Models
 {
-  public class RecipeDto
-  {
-    public RecipeDto(string name, string description, IngredientDto[] ingredients)
+    public class CreatedRecipeDto
     {
-      Name = name;
-      Description = description;
-      Ingredients = ingredients;
+        public CreatedRecipeDto(string name, string description, ICollection<CreatedIngredientDto> ingredients)
+        {
+            Name = name;
+            Description = description;
+            Ingredients = ingredients;
+        }
+
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public ICollection<CreatedIngredientDto> Ingredients { get; set; }
     }
 
-    public long? Id { get; set; }
-    public string? Name { get; set; }
-    public string? Description { get; set; }
-    public IngredientDto[]? Ingredients { get; set; }
-  }
+    public class UpdatedRecipeDto
+    {
+        public UpdatedRecipeDto(string? name, string? description, ICollection<UpdatedIngredientDto>? ingredients, long id)
+        {
+            Name = name;
+            Description = description;
+            Ingredients = ingredients;
+            Id = id;
+        }
+
+        public long Id { get; set; }
+        public string? Name { get; set; }
+        public string? Description { get; set; }
+        public ICollection<UpdatedIngredientDto>? Ingredients { get; set; }
+    }
 }

@@ -10,16 +10,16 @@ namespace RecipesAPI.Tests
     {
         public DatabaseFixture()
         {
-            options = new DbContextOptionsBuilder<RecipesContext>()
+            Options = new DbContextOptionsBuilder<RecipesContext>()
                 .UseInMemoryDatabase(databaseName: "TestRecipeDatabase")
                 .Options;
         }
         
-        public DbContextOptions<RecipesContext> options { get; set; }
+        public DbContextOptions<RecipesContext> Options { get; set; }
 
         public void Dispose()
-        {
-            this.options = null;
+        { 
+            Options = null;
         }
     }
 }
