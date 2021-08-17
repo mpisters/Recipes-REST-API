@@ -8,3 +8,7 @@ Requirements:
 
 ## Migrations
 For database migrations: https://docs.microsoft.com/en-us/ef/core/managing-schemas/migrations/?tabs=dotnet-core-cli
+
+Do not forget to install the EF CLI tools:
+
+https://docs.microsoft.com/en-us/ef/core/cli/
