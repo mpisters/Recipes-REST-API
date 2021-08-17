@@ -14,8 +14,7 @@ namespace RecipesAPI.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Recipe>()
-                .HasMany<Ingredient>(recipe => recipe.Ingredients);
+            modelBuilder.Entity<Recipe>().HasMany(recipe => recipe.Ingredients).WithOne().OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
